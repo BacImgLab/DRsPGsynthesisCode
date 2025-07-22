@@ -51,5 +51,5 @@ Please refer to individual module scripts and included documentation for detaile
 
 ## Reference
 
-Please cite this paper when using DRimage_processing:  
+Please cite this paper when using DRsPGsynthesisCode:  
 XXX
