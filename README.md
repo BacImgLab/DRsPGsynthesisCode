@@ -10,7 +10,7 @@ The repository provides analysis workflows for:
 * 3D-dSTORM septum width analysis
 * Electron tomography (ET) septum width analysis
 
-The repository contains analysis scripts and supporting Fiji/ImageJ plugins or workflows used for image preprocessing, segmentation, registration, localization, trajectory analysis, and quantitative measurements.
+The repository contains analysis scripts and workflows that use Fiji/ImageJ and other external software for image preprocessing, segmentation, registration, localization, trajectory analysis, and quantitative measurements.
 
 ---
 
@@ -22,7 +22,7 @@ The main analysis modules are organized according to the type of imaging data:
 2. Fluorescence Lifetime Imaging (FLIM)
 3. Single-Molecule Tracking (SMT)
 4. 3D-dSTORM Septum Width Analysis
-5. Tomography Septum Width Analysis
+5. Electron Tomography Septum Width Analysis
 
 ---
 
@@ -46,7 +46,7 @@ The general workflow includes:
 ### Main scripts
 
 * `MultiChannelDriftCorrection.m`
-  Performs multichannel drift correction. The workflow uses the Fiji/ImageJ HyperStackReg plugin.
+  Performs multichannel drift correction using the Fiji/ImageJ HyperStackReg plugin.
 
 * `MultiChannelChromaticAberration.m`
   Performs chromatic aberration correction using `imreg2Dr`.
@@ -68,7 +68,7 @@ The general workflow includes:
 
 ### Fiji/ImageJ dependencies
 
-The workflow may use:
+Depending on the analysis workflow, the following Fiji/ImageJ tools may be required:
 
 * HyperStackReg for image registration/drift correction
 * PureDenoise for image denoising
@@ -87,7 +87,7 @@ This module is used to process fluorescence lifetime and intensity images export
 3. Perform image stacking and preprocessing using MATLAB.
 4. Perform background subtraction using the Fiji/ImageJ `bersenThtest` plugin.
 5. Calculate pixel-wise fluorescence lifetime and intensity values.
-6. Export quantitative measurements for further statistical analysis.
+6. Export quantitative measurements for downstream statistical analysis.
 
 ### Main script
 
@@ -96,11 +96,11 @@ This module is used to process fluorescence lifetime and intensity images export
 
 ### Input
 
-The input consists of intensity and lifetime image files exported from Leica LAS X FLIM/FCS software.
+Intensity and lifetime image files exported from Leica LAS X FLIM/FCS software.
 
 ### Output
 
-The analysis generates processed lifetime and intensity measurements for downstream quantitative analysis.
+Processed fluorescence lifetime and intensity measurements for downstream quantitative analysis.
 
 ---
 
@@ -119,7 +119,7 @@ This module is used to process and analyze single-molecule imaging data, includi
 7. Classify molecular states.
 8. Calculate velocity and trajectory distributions.
 9. Remove trajectories or regions affected by drift where required.
-10. Generate trajectory and quantitative plots.
+10. Generate trajectory visualizations and quantitative measurements.
 
 ### Main scripts
 
@@ -177,7 +177,8 @@ This module is used to quantify septum width from 3D-dSTORM imaging data.
 
 ### Input
 
-2D projections of 3D-dSTORM images and manually defined septum ROIs.
+* 2D projections of 3D-dSTORM images
+* Manually defined septum ROIs
 
 ### Output
 
@@ -185,7 +186,7 @@ Quantitative septum-width measurements based on FWHM analysis.
 
 ---
 
-## 5. Tomography Septum Width Analysis
+## 5. Electron Tomography Septum Width Analysis
 
 This module is used to quantify septum width from electron tomography images.
 
@@ -204,7 +205,8 @@ This module is used to quantify septum width from electron tomography images.
 
 ### Input
 
-2D electron tomography images with manually defined septum ROIs.
+* 2D electron tomography images
+* Manually defined septum ROIs
 
 ### Output
 
@@ -216,7 +218,7 @@ Quantitative measurements of septum width.
 
 ### Software
 
-The analysis workflows require:
+The analysis workflows use the following software and plugins, depending on the analysis module:
 
 * MATLAB R2024a
 * Fiji/ImageJ
@@ -226,8 +228,6 @@ The analysis workflows require:
 * PureDenoise
 * `imreg2Dr`
 * `bersenThtest`
-
-Some modules require only a subset of these dependencies.
 
 ### Operating system
 
@@ -257,7 +257,7 @@ Install MATLAB R2024a.
 
 ### 3. Install Fiji/ImageJ
 
-Install Fiji/ImageJ and the Fiji/ImageJ plugins required for the selected analysis workflow.
+Install Fiji/ImageJ and the required plugins for the selected analysis workflow.
 
 ### 4. Install Cellpose3
 
@@ -271,18 +271,20 @@ Install the ThunderSTORM plugin in Fiji/ImageJ.
 
 ThunderSTORM is required for single-molecule localization in the SMT workflow.
 
-### 6. Install additional Fiji/ImageJ plugins
+### 6. Install additional Fiji/ImageJ tools
 
-Install the required plugins and supporting tools used by the selected workflow, including:
+Install the tools required by the selected workflow, including:
 
 * HyperStackReg
 * PureDenoise
 * `imreg2Dr`
 * `bersenThtest`
 
+Not all tools are required for every analysis module.
+
 ### 7. MATLAB scripts
 
-No compilation is required for the MATLAB scripts.
+No compilation is required.
 
 Open the MATLAB script corresponding to the desired analysis module and specify the input data path and analysis parameters before running the script.
 
@@ -290,7 +292,7 @@ Open the MATLAB script corresponding to the desired analysis module and specify 
 
 ## Typical installation time
 
-If MATLAB, Fiji/ImageJ, Cellpose3, and ThunderSTORM are already installed, obtaining the repository and preparing the MATLAB scripts typically requires only a few minutes.
+If MATLAB, Fiji/ImageJ, Cellpose3, and ThunderSTORM are already installed, obtaining the repository and preparing the MATLAB scripts typically takes only a few minutes.
 
 Installation time for external software and plugins depends on the user's computer, network connection, and existing software environment.
 
@@ -298,20 +300,20 @@ Installation time for external software and plugins depends on the user's comput
 
 ## How to use
 
-The appropriate analysis module should be selected according to the type of imaging dataset.
+Select the analysis module corresponding to the imaging dataset.
 
 ### General workflow
 
-1. Prepare the imaging data according to the requirements of the selected analysis module.
-2. Perform any required Fiji/ImageJ preprocessing.
+1. Prepare the input data according to the requirements of the selected module.
+2. Perform the required Fiji/ImageJ preprocessing.
 3. Open the corresponding MATLAB script.
 4. Specify the input data path.
 5. Set the required analysis parameters.
-6. Run the MATLAB script.
+6. Run the script.
 7. Inspect and export the resulting quantitative measurements.
 8. Perform downstream statistical analysis as described in the manuscript.
 
-Module-specific preprocessing steps, input formats, and analysis parameters are described in the corresponding MATLAB scripts and documentation.
+Module-specific input requirements and processing steps are described in the corresponding MATLAB scripts and documentation.
 
 ---
 
@@ -321,12 +323,12 @@ The required input data depend on the analysis module.
 
 ### Multicolor colocalization
 
-Input:
+**Input:**
 
 * Multichannel fluorescence images
 * Corresponding segmentation information where required
 
-Required preprocessing may include:
+**Preprocessing may include:**
 
 * Drift correction
 * Chromatic aberration correction
@@ -335,14 +337,14 @@ Required preprocessing may include:
 
 ### FLIM
 
-Input:
+**Input:**
 
 * Lifetime images
 * Intensity images exported from Leica LAS X FLIM/FCS software
 
 ### SMT
 
-Input:
+**Input:**
 
 * Single-molecule image sequences
 * Localization results generated using ThunderSTORM
@@ -350,14 +352,14 @@ Input:
 
 ### 3D-dSTORM
 
-Input:
+**Input:**
 
 * 2D projections of 3D-dSTORM localization data
 * Manually defined septum ROIs
 
 ### Electron tomography
 
-Input:
+**Input:**
 
 * 2D electron tomography images
 * Manually defined septum ROIs
@@ -366,7 +368,7 @@ Input:
 
 ## Output
 
-The scripts generate quantitative measurements that can be used for downstream statistical analysis and figure preparation.
+The scripts generate quantitative measurements for downstream statistical analysis and figure preparation.
 
 Depending on the analysis module, outputs may include:
 
@@ -391,8 +393,8 @@ The analysis code in this repository was used to process imaging data described 
 
 To reproduce an analysis:
 
-1. Use the appropriate imaging dataset.
-2. Follow the preprocessing workflow described for the corresponding module.
+1. Obtain the corresponding imaging dataset.
+2. Follow the preprocessing workflow described for the relevant analysis module.
 3. Run the corresponding MATLAB script.
 4. Use the analysis parameters specified in the script and/or manuscript Methods.
 5. Apply the same data-selection and segmentation criteria described in the manuscript.
@@ -419,14 +421,6 @@ Additional experimental details, imaging parameters, and data-analysis procedure
 
 ---
 
-## License
-
-This repository is provided for research use.
-
-A formal open-source license should be added to the repository if redistribution or reuse under a specific license is intended.
-
----
-
 ## Reference
 
 Please cite the associated manuscript when using `DRimage_processing`:
@@ -438,3 +432,4 @@ Please cite the associated manuscript when using `DRimage_processing`:
 ## Contact
 
 For questions regarding the analysis code or its application to the datasets described in the associated manuscript, please contact the corresponding author.
+
