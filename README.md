@@ -221,21 +221,21 @@ Quantitative measurements of septum width.
 The analysis workflows use the following software and plugins, depending on the analysis module:
 
 * MATLAB R2024a
-* Fiji/ImageJ
+* Fiji/ImageJ (ImageJ 1.54f)
 * Cellpose3
-* ThunderSTORM
-* HyperStackReg
+* ThunderSTORM (dev-2016-09-04-b1)
+* HyperStackReg (Versino 5.7)
 * PureDenoise
 * `imreg2Dr`
 * `bersenThtest`
 
 ### Operating system
 
-* Windows
+* Operating system: Windows 10 / 11 (64-bit)
 
 ### Tested environment
 
-The analysis workflows were tested using **MATLAB R2024a on Windows**, together with Fiji/ImageJ, Cellpose3, and ThunderSTORM.
+The analysis workflows were tested using **MATLAB R2024a on Windows 11 (64-bit)**, together with ImageJ 1.54f, Cellpose 3 and ThunderSTORM (dev-2016-09-04-b1).
 
 ### Hardware
 
