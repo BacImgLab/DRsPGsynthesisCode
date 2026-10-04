@@ -224,7 +224,7 @@ The analysis workflows use the following software and plugins, depending on the 
 * Fiji/ImageJ (ImageJ 1.54f)
 * Cellpose3
 * ThunderSTORM (dev-2016-09-04-b1)
-* HyperStackReg (Versino 5.7)
+* HyperStackReg (Version 5.7)
 * PureDenoise
 * `imreg2Dr`
 * `bersenThtest`
