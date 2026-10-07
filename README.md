@@ -1,6 +1,6 @@
-# DRimage_processing
+# DRsPGsynthesisCode
 
-`DRimage_processing` is a collection of MATLAB scripts and Fiji/ImageJ-based workflows for quantitative analysis of *Deinococcus radiodurans* imaging data.
+`DRsPGsynthesisCode` is a collection of MATLAB scripts and Fiji/ImageJ-based workflows for quantitative analysis of *Deinococcus radiodurans* imaging data.
 
 The repository provides analysis workflows for:
 
@@ -11,6 +11,8 @@ The repository provides analysis workflows for:
 * Electron tomography (ET) septum width analysis
 
 The repository contains analysis scripts and workflows that use Fiji/ImageJ and other external software for image preprocessing, segmentation, registration, localization, trajectory analysis, and quantitative measurements.
+
+A small **simulated** demo dataset and a one-command demo workflow are provided in `demo/`; they allow the code to be tested without any experimental data, Fiji/ImageJ or MATLAB toolbox (see [Demo](#demo)).
 
 ---
 
@@ -23,6 +25,8 @@ The main analysis modules are organized according to the type of imaging data:
 3. Single-Molecule Tracking (SMT)
 4. 3D-dSTORM Septum Width Analysis
 5. Electron Tomography Septum Width Analysis
+
+A small simulated demo dataset and a ready-to-run demo script covering two of these modules (3D-dSTORM septum width and SMT) are provided in `demo/`.
 
 ---
 
@@ -292,9 +296,11 @@ Open the MATLAB script corresponding to the desired analysis module and specify 
 
 ## Typical installation time
 
-If MATLAB, Fiji/ImageJ, Cellpose3, and ThunderSTORM are already installed, obtaining the repository and preparing the MATLAB scripts typically takes only a few minutes.
+Obtaining the repository and preparing the MATLAB scripts takes less than 5 minutes on a normal desktop computer, provided that MATLAB and the required Fiji/ImageJ plugins for the selected module are already installed.
 
-Installation time for external software and plugins depends on the user's computer, network connection, and existing software environment.
+Installing MATLAB, Fiji/ImageJ and the plugins from scratch may take longer; the required time depends on the user's computer, network connection and existing software environment.
+
+Running the simulated demo described in the [Demo](#demo) section requires only MATLAB and takes less than a minute (≈ 20–30 s).
 
 ---
 
@@ -391,29 +397,96 @@ The exact output format depends on the individual MATLAB script.
 
 The analysis code in this repository was used to process imaging data described in the associated manuscript.
 
+### Testing the code without experimental data
+
+The repository includes a small simulated demo dataset and a single command that runs two representative workflows on it: the septum-width analysis of 3D-dSTORM intensity profiles and a trajectory analysis of simulated single-molecule tracking data. See the [Demo](#demo) section below.
+
+### Reproducing the quantitative results
+
 To reproduce an analysis:
 
-1. Obtain the corresponding imaging dataset.
+1. Obtain the corresponding imaging dataset (see the data-availability statement of the manuscript).
 2. Follow the preprocessing workflow described for the relevant analysis module.
 3. Run the corresponding MATLAB script.
 4. Use the analysis parameters specified in the script and/or manuscript Methods.
 5. Apply the same data-selection and segmentation criteria described in the manuscript.
 
-The repository contains the analysis scripts used for quantitative image processing. Raw imaging datasets are not currently included in this repository.
+| Quantitative result (figure / table) | Analysis module | Script(s) |
+|---|---|---|
+| Fig. 1b, c | Demography / cell-cycle staging | `Colocalization/Beforedemoprocess.m` → `Colocalization/DemoDR_stage35.m` (cell-cycle classification: `BacImgLab/DeCNN`) |
+| Fig. 1c–e, Fig. 4a–e; Supplementary Table 5 | ET septum width | `Tomo/TomowidthCacalu.m` |
+| Fig. 2a; Supplementary Fig. 7a, c | Colocalization (Pearson correlation) | `Colocalization/PCCcaclu.m` |
+| Fig. 2b–d | Septal enrichment, demographs, displacement | `Colocalization/S0S1select.m`, `Colocalization/lineProfile.m`, `Colocalization/demoSmooth.m` |
+| Fig. 3, Fig. 6a–d; Supplementary Fig. 9, 10f–g | FLIM lifetime and intensity | `Lifetime/lifeTcalculationbernsen.m` |
+| Fig. 4f–g; Supplementary Table 5 | 3D-dSTORM / 3D-SMLM septum width | `3D-dSTORM/dSTORMwidthcaclu.m` |
+| Fig. 5a–g; Supplementary Fig. 15–17 | SMT: localization, linking, state classification, MSD, speed distributions | `SMTanalysis/SMTdataPrepare.m` → ThunderSTORM → `SMTanalysis/Spotslink.m` → `SMTanalysis/RefineTraceSegDr.mlapp` → `SMTanalysis/statesClassifyDr.m` → `SMTanalysis/dataprocessSMTWCF.m` and `SMTanalysis/MSDsingle2D.m` / `SMTanalysis/CDF_logCalc.m` (MSD, step-length CDF and velocity fits: `SMTanalysis/linfitR.m`) |
+| Fig. 5d; Supplementary Fig. 16d–g | 2D-projection correction of FtsW speed | `SMTanalysis/unwrapTraj.m`, `SMTanalysis/DrunwrapX.m`, `SMTanalysis/DrunwrapY.m` |
+
+Raw imaging datasets (single-molecule localization movies, FLIM photon data and electron-tomography tilt series) are not included in this repository because of their very large size; they are available from the corresponding author upon reasonable request. The simulated demo dataset in `demo/` allows the code to be tested without them.
 
 ---
 
-## Demo dataset
+## Demo
 
-A separate demo dataset is not currently provided with this repository.
+A small **simulated** demo dataset is provided in `demo/demo_data/`, together with a single command that runs two representative analysis workflows on it. Running the demo requires only base MATLAB: no Fiji/ImageJ, no additional plugin, no MATLAB toolbox and no experimental data are needed.
 
-Users should therefore use their own imaging datasets prepared according to the input requirements described above.
+### Demo dataset
+
+| File | Content | Used by |
+|---|---|---|
+| `demo/demo_data/dSTORM_profile_01.csv` … `_05.csv` | Five simulated septum intensity profiles of a 2D projection of 3D-dSTORM data. Column 1: distance along the line ROI (nm); column 2: gray value. | `3D-dSTORM/dSTORMwidthcaclu.m` |
+| `demo/demo_data/SMT_tracks_demo.csv` | Simulated 2D single-molecule tracking dataset: 12 molecules × 200 frames, 0.16 µm per pixel, 110 ms per frame. Columns: track, frame, x, y, intensity. | `demo/runDemoSMT.m` (uses `SMTanalysis/MSDsingle2D.m`, `SMTanalysis/CDF_logCalc.m` and `SMTanalysis/linfitR.m`) |
+
+Both files are simulated and contain no experimental measurements. They are reproducible: the septum profiles are generated deterministically and the tracking dataset is regenerated by `demo/makeDemoData.m` with a fixed random seed (`rng(2026,'twister')`).
+
+### Instructions to run on the demo data
+
+In MATLAB:
+
+    >> cd demo
+    >> runDemo
+
+or, from a terminal:
+
+    matlab -batch "cd demo; runDemo"
+
+`runDemo.m` executes three steps:
+
+1. `makeDemoData.m` regenerates the simulated datasets in `demo/demo_data/`.
+2. `runDemoDstorm.m` copies the profile CSVs into `demo/demo_output/dSTORM_profiles/` and runs `3D-dSTORM/dSTORMwidthcaclu.m` on them.
+3. `runDemoSMT.m` analyses `SMT_tracks_demo.csv` with `MSDsingle2D.m`, `CDF_logCalc.m` and `linfitR.m`.
+
+### Expected output
+
+After the run, `demo/demo_output/` contains:
+
+    demo/demo_output/
+    ├── dSTORM_profiles/
+    │   ├── Plots/AllWidths.csv                        FWHM of each profile (1 header + 5 rows)
+    │   └── Plots/dSTORM_profile_0X_HalfPeakWidth.png  annotated FWHM plot per profile
+    ├── SMT_MSD_demo.csv                               lag time (s), mean MSD (µm²), SEM (µm²)
+    ├── SMT_MSD_demo.png                               log-log MSD curve
+    ├── SMT_stepCDF_demo.csv                           step length (µm), cumulative probability (101 bins)
+    ├── SMT_stepCDF_demo.png                           step-length CDF plot
+    └── SMT_velocity_demo.csv                          per-trajectory linear-fit velocity (12 rows)
+
+Expected values for the delivered data (MATLAB R2024a):
+
+* `AllWidths.csv`: FWHM ≈ 23.7, 28.4, 32.7, 37.3 and 42.1 nm for the five simulated septa (the simulated half-widths σ are 10, 12, 14, 16 and 18 nm, i.e. FWHM ≈ 2.355·σ).
+* `SMT_MSD_demo.csv`: 50 lag times from 0.11 s to 5.50 s; the mean MSD increases approximately linearly from ≈ 0.015 µm² (0.11 s) to ≈ 0.59 µm² (5.50 s), corresponding to an effective diffusion coefficient of ≈ 0.027 µm²/s (the simulated values were D = 0.005, 0.02 and 0.05 µm²/s plus 30 nm localization uncertainty).
+* `SMT_stepCDF_demo.csv`: 50 % of the simulated steps are shorter than ≈ 0.09 µm and 90 % shorter than ≈ 0.20 µm.
+* `SMT_velocity_demo.csv`: 12 rows with a mean linear-fit speed of ≈ 0.07 µm/s. (For demonstration the linear fit is applied to whole trajectories here; in the analysis of the experimental data it is applied to trajectory segments after state segmentation, see `statesClassifyDr.m` / `RefineTraceSegDr.mlapp`.)
+* The console lists the three steps and ends with `Demo finished in ≈ 25 s`.
+
+### Expected run time for the demo
+
+≈ 20–30 s on a normal desktop computer with MATLAB R2024a, including writing all figures (measured 19.5 s and 25.2 s on Windows 10/11 with MATLAB R2024a). All three steps together stay well below one minute. The very first run after a cold start of MATLAB can take a few minutes because the graphics renderer is initialized then; subsequent runs take ≈ 25 s.
 
 ---
 
 ## Code functionality and documentation
 
-The functionality of the scripts is described in this README and in the corresponding MATLAB scripts.
+The functionality of the scripts is described in this README, in the `Readme.md` file of each analysis module, and in the corresponding MATLAB scripts.
 
 For each analysis module, the repository specifies the major processing steps, required external software, expected input data, and quantitative outputs.
 
@@ -423,13 +496,13 @@ Additional experimental details, imaging parameters, and data-analysis procedure
 
 ## Reference
 
-Please cite the associated manuscript when using `DRimage_processing`:
+Please cite the associated manuscript when using this code:
 
-**XXX**
+Class A PBPs reinforce the septal cell wall following initial synthesis by SEDS-bPBP pairs during bacterial cytokinesis.
+Author list, journal, year, DOI <!-- to be completed once the manuscript is published -->
 
 ---
 
 ## Contact
 
 For questions regarding the analysis code or its application to the datasets described in the associated manuscript, please contact the corresponding author.
-

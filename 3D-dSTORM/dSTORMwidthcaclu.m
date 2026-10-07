@@ -4,11 +4,15 @@
 % saves plots for each curve with FWHM annotation, 
 % and outputs a summary CSV with all calculated widths.
 %
-clear;
+% 'sourceFolder' may be defined in the workspace before the script is run
+% (this is how demo/runDemo.m calls it). Otherwise the folder set below is used.
+clearvars -except sourceFolder;
 clc;
 
 % ----------- Set folder paths -----------
-sourceFolder = 'C:\Users\WT_S0_width_compared';  % <-- Replace with your actual path
+if ~exist('sourceFolder', 'var') || isempty(sourceFolder)
+    sourceFolder = 'C:\Users\WT_S0_width_compared';  % <-- Replace with your actual path
+end
 outputFolder = fullfile(sourceFolder, 'Plots');
 
 % Create output folder if it does not exist
