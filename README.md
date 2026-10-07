@@ -434,21 +434,6 @@ To reproduce an analysis:
 4. Use the analysis parameters specified in the script and/or manuscript Methods.
 5. Apply the same data-selection and segmentation criteria described in the manuscript.
 
-| Quantitative result (figure / table) | Analysis module | Script(s) |
-|---|---|---|
-| Fig. 1b, c | Demography / cell-cycle staging | `Colocalization/BeforeDemoProcess.m` → `Colocalization/DemoDR_stage35.m` (cell-cycle classification: [BacImgLab/DeCNN](https://github.com/BacImgLab/DeCNN)) |
-| Fig. 1c–e, Fig. 4a–e; Supplementary Table 5 | ET septum width | `Tomo/TomowidthCaclu.m` |
-| Fig. 2a; Supplementary Fig. 7a, c | Colocalization (Pearson correlation) | `Colocalization/PCCcaclu.m` |
-| Fig. 2b–d | Septal enrichment, demographs, displacement | `Colocalization/S0S1select.m`, `Colocalization/lineProfile.m`, `Colocalization/demoSmooth.m` |
-| Fig. 3, Fig. 6a–d; Supplementary Fig. 9, 10f–g | FLIM lifetime and intensity | `Lifetime/lifeTcalculationbernsen.m` |
-| Fig. 4f–g; Supplementary Table 5 | 3D-dSTORM / 3D-SMLM septum width | `3D-dSTORM/dSTORMwidthcaclu.m` |
-| Fig. 5a–g; Supplementary Fig. 15–17 | SMT: localization, linking, state classification, MSD, speed distributions | `SMTanalysis/SMTdataPrepare.m` → ThunderSTORM → `SMTanalysis/spotsLinking.m` → `SMTanalysis/RefineTraceSegDr.mlapp` → `SMTanalysis/statesClassifyDr.m` → `SMTanalysis/dataprocessSMTWCF.m` and `SMTanalysis/MSDsingle2D.m` / `SMTanalysis/CDF_logCalc.m` (MSD, step-length CDF and velocity fits: `SMTanalysis/linfitR.m`) |
-| Fig. 5d; Supplementary Fig. 16d–g | 2D-projection correction of FtsW speed | `SMTanalysis/unwrapTraj.m`, `SMTanalysis/DrunwrapX.m`, `SMTanalysis/DrunwrapY.m` |
-
-Raw imaging datasets (single-molecule localization movies, FLIM photon data and electron-tomography tilt series) are not included in this repository because of their very large size; they are available from the corresponding author upon reasonable request. The simulated demo dataset in `demo/` allows the code to be tested without them.
-
----
-
 ## Demo
 
 A small **simulated** demo dataset is provided in `demo/demo_data/`, together with a single command that runs three representative analysis workflows on it. Running the demo requires only base MATLAB: no Fiji/ImageJ, no additional plugin, no MATLAB toolbox and no experimental data are needed.
