@@ -12,7 +12,7 @@ The repository provides analysis workflows for:
 
 The repository contains analysis scripts and workflows that use Fiji/ImageJ and other external software for image preprocessing, segmentation, registration, localization, trajectory analysis, and quantitative measurements.
 
-A small **simulated** demo dataset and a one-command demo workflow are provided in `demo/`; they allow the code to be tested without any experimental data, Fiji/ImageJ or MATLAB toolbox (see [Demo](#demo)).
+A small **simulated** demo dataset and a one-command demo workflow are provided in `demo/`; they allow the code to be tested without any experimental data, without Fiji/ImageJ and without any MATLAB toolbox (see [Demo](#demo)).
 
 ---
 
@@ -20,17 +20,23 @@ A small **simulated** demo dataset and a one-command demo workflow are provided 
 
 The main analysis modules are organized according to the type of imaging data:
 
-1. Multicolor Colocalization Imaging
-2. Fluorescence Lifetime Imaging (FLIM)
-3. Single-Molecule Tracking (SMT)
-4. 3D-dSTORM Septum Width Analysis
-5. Electron Tomography Septum Width Analysis
+| Module | Directory |
+|---|---|
+| 1. Multicolor Colocalization Imaging | `Colocalization/` |
+| 2. Fluorescence Lifetime Imaging (FLIM) | `Lifetime/` |
+| 3. Single-Molecule Tracking (SMT) | `SMTanalysis/` |
+| 4. 3D-dSTORM Septum Width Analysis | `3D-dSTORM/` |
+| 5. Electron Tomography Septum Width Analysis | `Tomo/` |
 
-A small simulated demo dataset and a ready-to-run demo script covering two of these modules (3D-dSTORM septum width and SMT) are provided in `demo/`.
+Each module directory contains its own `Readme.md` with module-specific instructions.
+
+A small simulated demo dataset and a ready-to-run demo script covering three of these modules (multicolor colocalization, SMT and 3D-dSTORM septum width) are provided in `demo/` (see [Demo](#demo)).
 
 ---
 
 ## 1. Multicolor Colocalization Imaging
+
+Directory: `Colocalization/`
 
 This module is used to preprocess and quantitatively analyze multicolor fluorescence images of *D. radiodurans*.
 
@@ -53,12 +59,12 @@ The general workflow includes:
   Performs multichannel drift correction using the Fiji/ImageJ HyperStackReg plugin.
 
 * `MultiChannelChromaticAberration.m`
-  Performs chromatic aberration correction using `imreg2Dr`.
+  Performs chromatic aberration correction using `imreg2Dr.m`.
 
 * `combineSegfiles4C.m`
   Combines segmentation and quantitative data for multichannel analysis.
 
-* `Beforedemoprocess.m`
+* `BeforeDemoProcess.m`
   Performs preprocessing before demography analysis.
 
 * `DemoDR_stage35.m`
@@ -76,11 +82,13 @@ Depending on the analysis workflow, the following Fiji/ImageJ tools may be requi
 
 * HyperStackReg for image registration/drift correction
 * PureDenoise for image denoising
-* `imreg2Dr` for chromatic aberration correction
+* `imreg2Dr.m` for chromatic aberration correction
 
 ---
 
 ## 2. Fluorescence Lifetime Imaging (FLIM)
+
+Directory: `Lifetime/`
 
 This module is used to process fluorescence lifetime and intensity images exported from Leica LAS X FLIM/FCS software.
 
@@ -89,7 +97,7 @@ This module is used to process fluorescence lifetime and intensity images export
 1. Acquire FLIM data using a Leica STELLARIS 8 confocal microscope.
 2. Export intensity and lifetime images from Leica LAS X FLIM/FCS software.
 3. Perform image stacking and preprocessing using MATLAB.
-4. Perform background subtraction using the Fiji/ImageJ `bersenThtest` plugin.
+4. Perform background subtraction using the Fiji/ImageJ `bersenThtest` macro.
 5. Calculate pixel-wise fluorescence lifetime and intensity values.
 6. Export quantitative measurements for downstream statistical analysis.
 
@@ -97,6 +105,10 @@ This module is used to process fluorescence lifetime and intensity images export
 
 * `lifeTcalculationbernsen.m`
   Stacks exported FLIM images, performs image processing and background correction, and calculates pixel-wise fluorescence lifetime and intensity values.
+
+### Fiji/ImageJ dependency
+
+* `bersenThtest.ijm` for background subtraction
 
 ### Input
 
@@ -109,6 +121,8 @@ Processed fluorescence lifetime and intensity measurements for downstream quanti
 ---
 
 ## 3. Single-Molecule Tracking (SMT)
+
+Directory: `SMTanalysis/`
 
 This module is used to process and analyze single-molecule imaging data, including localization, trajectory generation, trajectory segmentation, and molecular-state classification.
 
@@ -133,11 +147,11 @@ This module is used to process and analyze single-molecule imaging data, includi
 * `CACorrectionofSMTsplitter.m`
   Performs chromatic aberration correction for split-channel SMT data.
 
-* `Spotslink.m`
+* `spotsLinking.m`
   Links localized single-molecule positions into trajectories.
 
-* `RefineTraceSegDr`
-  Performs trajectory segmentation and refinement.
+* `RefineTraceSegDr.mlapp`
+  App Designer app for interactive trajectory segmentation and refinement.
 
 * `statesClassifyDr.m`
   Classifies molecular trajectories into movement states.
@@ -151,6 +165,15 @@ This module is used to process and analyze single-molecule imaging data, includi
 * `RemoveDrift.m`
   Removes regions or trajectories affected by sample drift.
 
+* `MSDsingle2D.m`
+  Calculates mean squared displacement (MSD) curves from trajectories.
+
+* `CDF_logCalc.m`
+  Calculates step-length cumulative distribution functions.
+
+* `linfitR.m`
+  Performs linear fitting of MSD/speed data.
+
 ### External software
 
 The SMT workflow uses:
@@ -162,6 +185,8 @@ The SMT workflow uses:
 ---
 
 ## 4. 3D-dSTORM Septum Width Analysis
+
+Directory: `3D-dSTORM/`
 
 This module is used to quantify septum width from 3D-dSTORM imaging data.
 
@@ -191,6 +216,8 @@ Quantitative septum-width measurements based on FWHM analysis.
 ---
 
 ## 5. Electron Tomography Septum Width Analysis
+
+Directory: `Tomo/`
 
 This module is used to quantify septum width from electron tomography images.
 
@@ -230,16 +257,14 @@ The analysis workflows use the following software and plugins, depending on the 
 * ThunderSTORM (dev-2016-09-04-b1)
 * HyperStackReg (Version 5.7)
 * PureDenoise
-* `imreg2Dr`
-* `bersenThtest`
 
 ### Operating system
 
-* Operating system: Windows 10 / 11 (64-bit)
+* Windows 10 / 11 (64-bit)
 
 ### Tested environment
 
-The analysis workflows were tested using **MATLAB R2024a on Windows 11 (64-bit)**, together with ImageJ 1.54f, Cellpose 3 and ThunderSTORM (dev-2016-09-04-b1).
+The analysis workflows were tested using **MATLAB R2024a on Windows 11 (64-bit)**, together with ImageJ 1.54f, Cellpose3 and ThunderSTORM (dev-2016-09-04-b1).
 
 ### Hardware
 
@@ -281,14 +306,12 @@ Install the tools required by the selected workflow, including:
 
 * HyperStackReg
 * PureDenoise
-* `imreg2Dr`
-* `bersenThtest`
 
 Not all tools are required for every analysis module.
 
 ### 7. MATLAB scripts
 
-No compilation is required.
+No compilation is required. The scripts in `Colocalization/`, `Lifetime/`, `SMTanalysis/`, `3D-dSTORM/` and `Tomo/` are plain MATLAB `.m` files (with one App Designer app, `SMTanalysis/RefineTraceSegDr.mlapp`).
 
 Open the MATLAB script corresponding to the desired analysis module and specify the input data path and analysis parameters before running the script.
 
@@ -319,7 +342,7 @@ Select the analysis module corresponding to the imaging dataset.
 7. Inspect and export the resulting quantitative measurements.
 8. Perform downstream statistical analysis as described in the manuscript.
 
-Module-specific input requirements and processing steps are described in the corresponding MATLAB scripts and documentation.
+Module-specific input requirements and processing steps are described in the corresponding `Readme.md` file of each module directory and in the MATLAB scripts themselves.
 
 ---
 
@@ -399,7 +422,7 @@ The analysis code in this repository was used to process imaging data described 
 
 ### Testing the code without experimental data
 
-The repository includes a small simulated demo dataset and a single command that runs two representative workflows on it: the septum-width analysis of 3D-dSTORM intensity profiles and a trajectory analysis of simulated single-molecule tracking data. See the [Demo](#demo) section below.
+The repository includes a small simulated demo dataset and a single command that runs three representative workflows on it: the septum-width analysis of 3D-dSTORM intensity profiles, a trajectory analysis of simulated single-molecule tracking data, and the Pearson-correlation calculation of a simulated multicolor colocalization dataset. See the [Demo](#demo) section below.
 
 ### Reproducing the quantitative results
 
@@ -413,13 +436,13 @@ To reproduce an analysis:
 
 | Quantitative result (figure / table) | Analysis module | Script(s) |
 |---|---|---|
-| Fig. 1b, c | Demography / cell-cycle staging | `Colocalization/Beforedemoprocess.m` → `Colocalization/DemoDR_stage35.m` (cell-cycle classification: `BacImgLab/DeCNN`) |
-| Fig. 1c–e, Fig. 4a–e; Supplementary Table 5 | ET septum width | `Tomo/TomowidthCacalu.m` |
+| Fig. 1b, c | Demography / cell-cycle staging | `Colocalization/BeforeDemoProcess.m` → `Colocalization/DemoDR_stage35.m` (cell-cycle classification: [BacImgLab/DeCNN](https://github.com/BacImgLab/DeCNN)) |
+| Fig. 1c–e, Fig. 4a–e; Supplementary Table 5 | ET septum width | `Tomo/TomowidthCaclu.m` |
 | Fig. 2a; Supplementary Fig. 7a, c | Colocalization (Pearson correlation) | `Colocalization/PCCcaclu.m` |
 | Fig. 2b–d | Septal enrichment, demographs, displacement | `Colocalization/S0S1select.m`, `Colocalization/lineProfile.m`, `Colocalization/demoSmooth.m` |
 | Fig. 3, Fig. 6a–d; Supplementary Fig. 9, 10f–g | FLIM lifetime and intensity | `Lifetime/lifeTcalculationbernsen.m` |
 | Fig. 4f–g; Supplementary Table 5 | 3D-dSTORM / 3D-SMLM septum width | `3D-dSTORM/dSTORMwidthcaclu.m` |
-| Fig. 5a–g; Supplementary Fig. 15–17 | SMT: localization, linking, state classification, MSD, speed distributions | `SMTanalysis/SMTdataPrepare.m` → ThunderSTORM → `SMTanalysis/Spotslink.m` → `SMTanalysis/RefineTraceSegDr.mlapp` → `SMTanalysis/statesClassifyDr.m` → `SMTanalysis/dataprocessSMTWCF.m` and `SMTanalysis/MSDsingle2D.m` / `SMTanalysis/CDF_logCalc.m` (MSD, step-length CDF and velocity fits: `SMTanalysis/linfitR.m`) |
+| Fig. 5a–g; Supplementary Fig. 15–17 | SMT: localization, linking, state classification, MSD, speed distributions | `SMTanalysis/SMTdataPrepare.m` → ThunderSTORM → `SMTanalysis/spotsLinking.m` → `SMTanalysis/RefineTraceSegDr.mlapp` → `SMTanalysis/statesClassifyDr.m` → `SMTanalysis/dataprocessSMTWCF.m` and `SMTanalysis/MSDsingle2D.m` / `SMTanalysis/CDF_logCalc.m` (MSD, step-length CDF and velocity fits: `SMTanalysis/linfitR.m`) |
 | Fig. 5d; Supplementary Fig. 16d–g | 2D-projection correction of FtsW speed | `SMTanalysis/unwrapTraj.m`, `SMTanalysis/DrunwrapX.m`, `SMTanalysis/DrunwrapY.m` |
 
 Raw imaging datasets (single-molecule localization movies, FLIM photon data and electron-tomography tilt series) are not included in this repository because of their very large size; they are available from the corresponding author upon reasonable request. The simulated demo dataset in `demo/` allows the code to be tested without them.
@@ -428,7 +451,7 @@ Raw imaging datasets (single-molecule localization movies, FLIM photon data and 
 
 ## Demo
 
-A small **simulated** demo dataset is provided in `demo/demo_data/`, together with a single command that runs two representative analysis workflows on it. Running the demo requires only base MATLAB: no Fiji/ImageJ, no additional plugin, no MATLAB toolbox and no experimental data are needed.
+A small **simulated** demo dataset is provided in `demo/demo_data/`, together with a single command that runs three representative analysis workflows on it. Running the demo requires only base MATLAB: no Fiji/ImageJ, no additional plugin, no MATLAB toolbox and no experimental data are needed.
 
 ### Demo dataset
 
@@ -436,8 +459,9 @@ A small **simulated** demo dataset is provided in `demo/demo_data/`, together wi
 |---|---|---|
 | `demo/demo_data/dSTORM_profile_01.csv` … `_05.csv` | Five simulated septum intensity profiles of a 2D projection of 3D-dSTORM data. Column 1: distance along the line ROI (nm); column 2: gray value. | `3D-dSTORM/dSTORMwidthcaclu.m` |
 | `demo/demo_data/SMT_tracks_demo.csv` | Simulated 2D single-molecule tracking dataset: 12 molecules × 200 frames, 0.16 µm per pixel, 110 ms per frame. Columns: track, frame, x, y, intensity. | `demo/runDemoSMT.m` (uses `SMTanalysis/MSDsingle2D.m`, `SMTanalysis/CDF_logCalc.m` and `SMTanalysis/linfitR.m`) |
+| `demo/demo_data/PCC/stage2 … stage5/Ch4_DR_00X.tif` | Eight simulated 4-channel (4-page) 64 × 64 uint16 TIFF stacks, two fields of view per stage folder. Channels 2, 3 and 4 share a common spatial structure with decreasing correlation. | `Colocalization/PCCcaclu.m` via `demo/runDemoPcc.m` |
 
-Both files are simulated and contain no experimental measurements. They are reproducible: the septum profiles are generated deterministically and the tracking dataset is regenerated by `demo/makeDemoData.m` with a fixed random seed (`rng(2026,'twister')`).
+All files are simulated and contain no experimental measurements. They are reproducible: the septum profiles and the colocalization stacks are generated deterministically, and the tracking dataset is regenerated by `demo/makeDemoData.m` with a fixed random seed (`rng(2026,'twister')`).
 
 ### Instructions to run on the demo data
 
@@ -450,11 +474,12 @@ or, from a terminal:
 
     matlab -batch "cd demo; runDemo"
 
-`runDemo.m` executes three steps:
+`runDemo.m` executes four steps:
 
-1. `makeDemoData.m` regenerates the simulated datasets in `demo/demo_data/`.
+1. `makeDemoData.m` regenerates the simulated datasets in `demo/demo_data/` (septum profiles, tracking table and multicolor stacks).
 2. `runDemoDstorm.m` copies the profile CSVs into `demo/demo_output/dSTORM_profiles/` and runs `3D-dSTORM/dSTORMwidthcaclu.m` on them.
 3. `runDemoSMT.m` analyses `SMT_tracks_demo.csv` with `MSDsingle2D.m`, `CDF_logCalc.m` and `linfitR.m`.
+4. `runDemoPcc.m` assembles an isolated working copy of the stage folders and runs `Colocalization/PCCcaclu.m` on the simulated 4-channel stacks.
 
 ### Expected output
 
@@ -468,7 +493,12 @@ After the run, `demo/demo_output/` contains:
     ├── SMT_MSD_demo.png                               log-log MSD curve
     ├── SMT_stepCDF_demo.csv                           step length (µm), cumulative probability (101 bins)
     ├── SMT_stepCDF_demo.png                           step-length CDF plot
-    └── SMT_velocity_demo.csv                          per-trajectory linear-fit velocity (12 rows)
+    ├── SMT_velocity_demo.csv                          per-trajectory linear-fit velocity (12 rows)
+    └── PCC/
+        ├── Merged_PCC_Values.csv                      pairwise PCC and mean intensities (8 rows)
+        └── work/                                      isolated working copy used for the run
+
+All results are written into `demo/demo_output/`, which is not tracked by git; the folder also holds a scratch working copy (`demo/demo_output/PCC/work/`) that `runDemoPcc.m` assembles so that `PCCcaclu.m` can run without modifying the repository tree.
 
 Expected values for the delivered data (MATLAB R2024a):
 
@@ -476,11 +506,37 @@ Expected values for the delivered data (MATLAB R2024a):
 * `SMT_MSD_demo.csv`: 50 lag times from 0.11 s to 5.50 s; the mean MSD increases approximately linearly from ≈ 0.015 µm² (0.11 s) to ≈ 0.59 µm² (5.50 s), corresponding to an effective diffusion coefficient of ≈ 0.027 µm²/s (the simulated values were D = 0.005, 0.02 and 0.05 µm²/s plus 30 nm localization uncertainty).
 * `SMT_stepCDF_demo.csv`: 50 % of the simulated steps are shorter than ≈ 0.09 µm and 90 % shorter than ≈ 0.20 µm.
 * `SMT_velocity_demo.csv`: 12 rows with a mean linear-fit speed of ≈ 0.07 µm/s. (For demonstration the linear fit is applied to whole trajectories here; in the analysis of the experimental data it is applied to trajectory segments after state segmentation, see `statesClassifyDr.m` / `RefineTraceSegDr.mlapp`.)
-* The console lists the three steps and ends with `Demo finished in ≈ 25 s`.
+* `PCC/Merged_PCC_Values.csv`: 8 rows (2 fields of view × 4 stage folders) with the three pairwise Pearson correlation coefficients and the mean channel intensities. On the simulated stacks the mean values are PCC(ch2–ch3) ≈ 0.966, PCC(ch2–ch4) ≈ 0.771 and PCC(ch3–ch4) ≈ 0.745, reproducing the decreasing correlation that was used to generate the data.
+* The console lists the four steps and ends with `Demo finished in ≈ 25 s`.
 
 ### Expected run time for the demo
 
-≈ 20–30 s on a normal desktop computer with MATLAB R2024a, including writing all figures (measured 19.5 s and 25.2 s on Windows 10/11 with MATLAB R2024a). All three steps together stay well below one minute. The very first run after a cold start of MATLAB can take a few minutes because the graphics renderer is initialized then; subsequent runs take ≈ 25 s.
+≈ 20–30 s on a normal desktop computer with MATLAB R2024a, including writing all figures (measured 19.5 s, 23.1 s and 25.2 s on Windows 10/11 with MATLAB R2024a). All four steps together stay well below one minute. The very first run after a cold start of MATLAB can take a few minutes because the graphics renderer is initialized then; subsequent runs take ≈ 25 s.
+
+### Scope of the demo
+
+The demo covers the numerical-analysis entry point of each module, i.e. the first
+point in every pipeline that can be executed without human interaction. The
+upstream steps of all modules are interactive by design — they require manually
+drawn ROIs, per-cell visual confirmation, or external GUI tools (Fiji/ImageJ
+plugins, Cellpose, ThunderSTORM, the LAS X export, or the `RefineTraceSegDr` App
+Designer app) — and therefore cannot be replayed unattended.
+
+| Module | Covered by the demo | Demo entry point | Interactive upstream steps not covered |
+|---|---|---|---|
+| Multicolor colocalization | Yes | `Colocalization/PCCcaclu.m` (via `runDemoPcc.m`) | `MultiChannelDriftCorrection.m` (Miji + Fiji `HyperStackReg`), `PureDenoise`, `MultiChannelChromaticAberration.m`, and the S0/S1 manual point selection in `DemoDR_stage2.m` / `DemoDR_stage35.m` |
+| Single-molecule tracking | Yes | `SMTanalysis/MSDsingle2D.m`, `CDF_logCalc.m`, `linfitR.m` (via `runDemoSMT.m`) | `SMTdataPrepare.m`, ThunderSTORM localisation, Cellpose3 segmentation, `CACorrectionofSMTsplitter.m`, `Spotslink.m`, the `RefineTraceSegDr.mlapp` app and `statesClassifyDr.m` |
+| 3D-dSTORM septum width | Yes | `3D-dSTORM/dSTORMwidthcaclu.m` (via `runDemoDstorm.m`) | drawing the line ROIs across the septa in Fiji |
+| Electron tomography septum width | No | `Tomo/TomowidthCaclu.m` — needs an ImageJ line ROI plus two manual clicks to define the main axis | the same Fiji line-ROI drawing step as 3D-dSTORM |
+| FLIM | No | `Lifetime/lifeTcalculationbernsen.m` — needs an intensity/lifetime stack and a Bernsen background mask | the LAS X FLIM/FCS export and the Bernsen masking plugin, both run outside MATLAB |
+
+The two modules that are not covered share the same reason: their numerical core
+consumes an input that is produced by an interactive step — a manually drawn line
+ROI in the case of tomography, a Fiji-generated background mask in the case of
+FLIM — so an unattended replay would have to substitute that step rather than
+execute it. The three covered modules are precisely those whose numerical core
+takes a plain, scriptable input: an intensity-profile CSV, a linked-trajectory
+table, and a 4-channel image stack.
 
 ---
 
@@ -494,12 +550,20 @@ Additional experimental details, imaging parameters, and data-analysis procedure
 
 ---
 
+## License
+
+This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
+
+Copyright (c) 2026 BacImaging.
+
+---
+
 ## Reference
 
 Please cite the associated manuscript when using this code:
 
 Class A PBPs reinforce the septal cell wall following initial synthesis by SEDS-bPBP pairs during bacterial cytokinesis.
-Author list, journal, year, DOI <!-- to be completed once the manuscript is published -->
+*Author list, Journal, Year, DOI — to be completed once the manuscript is published.*
 
 ---
 

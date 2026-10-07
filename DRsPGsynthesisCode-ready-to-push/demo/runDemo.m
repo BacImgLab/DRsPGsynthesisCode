@@ -2,7 +2,7 @@ function runDemo()
 %RUNDEMO Run the complete, self-contained demo of the analysis code.
 %
 %   The demo needs no experimental data, no Fiji/ImageJ and no MATLAB toolbox.
-%   It performs three steps:
+%   It performs four steps:
 %
 %     1. makeDemoData.m        writes the small simulated datasets into
 %                              demo/demo_data/
@@ -14,6 +14,10 @@ function runDemo()
 %                              MSDsingle2D.m, CDF_logCalc.m and linfitR.m and
 %                              writes the MSD, step-length CDF and velocity
 %                              results into demo/demo_output/
+%     4. runDemoPcc.m          (multicolor colocalization module) runs
+%                              Colocalization/PCCcaclu.m on the simulated
+%                              4-channel stacks and writes
+%                              demo/demo_output/PCC/Merged_PCC_Values.csv
 %
 %   Usage (MATLAB):
 %       >> cd demo
@@ -37,7 +41,7 @@ addpath(fullfile(repoDir, '3D-dSTORM'));
 addpath(fullfile(repoDir, 'SMTanalysis'));
 
 %% --- Step 1: simulated demo data ---
-fprintf('\n=== Step 1/3: generating the simulated demo data ===\n');
+fprintf('\n=== Step 1/4: generating the simulated demo data ===\n');
 try
     makeDemoData(dataDir);
     status{end+1} = 'Step 1 (demo data)             : OK';        %#ok<*AGROW>
@@ -47,7 +51,7 @@ catch ME
 end
 
 %% --- Step 2: 3D-dSTORM septum width module ---
-fprintf('\n=== Step 2/3: 3D-dSTORM septum width (dSTORMwidthcaclu.m) ===\n');
+fprintf('\n=== Step 2/4: 3D-dSTORM septum width (dSTORMwidthcaclu.m) ===\n');
 srcDir = fullfile(outDir, 'dSTORM_profiles');
 if ~exist(srcDir, 'dir')
     mkdir(srcDir);
@@ -62,12 +66,22 @@ catch ME
 end
 
 %% --- Step 3: SMT trajectory analysis ---
-fprintf('\n=== Step 3/3: SMT trajectory analysis (runDemoSMT.m) ===\n');
+fprintf('\n=== Step 3/4: SMT trajectory analysis (runDemoSMT.m) ===\n');
 try
     runDemoSMT(fullfile(dataDir, 'SMT_tracks_demo.csv'), outDir);
     status{end+1} = 'Step 3 (SMT trajectory analysis): OK';
 catch ME
     status{end+1} = ['Step 3 (SMT trajectory analysis): FAILED - ', ME.message];
+    rethrow(ME);
+end
+
+%% --- Step 4: multicolor colocalization (PCC) module ---
+fprintf('\n=== Step 4/4: multicolor colocalization (runDemoPcc.m) ===\n');
+try
+    runDemoPcc(fullfile(dataDir, 'PCC'), fullfile(outDir, 'PCC'));
+    status{end+1} = 'Step 4 (colocalization PCC)    : OK';
+catch ME
+    status{end+1} = ['Step 4 (colocalization PCC)    : FAILED - ', ME.message];
     rethrow(ME);
 end
 

@@ -18,7 +18,14 @@ function makeDemoData(outDir)
 %     110 ms per frame. The file is direct input for demo/runDemoSMT.m, i.e.
 %     for MSDsingle2D.m, CDF_logCalc.m and linfitR.m.
 %
-%   Both datasets are simulated. They contain no experimental measurements and
+%   Dataset 3 - Multicolor colocalization module (Pearson correlation)
+%     PCC/stage2/Ch4_DR_001.tif ... PCC/stage5/Ch4_DR_002.tif
+%     Eight simulated 4-channel (4-page) 64 x 64 uint16 TIFF stacks. Channels 2,
+%     3 and 4 share a common spatial structure with decreasing correlation
+%     (ch2-ch3 > ch2-ch4 > ch3-ch4), mimicking a multicolor colocalization
+%     dataset. The files are direct input for Colocalization/PCCcaclu.m.
+%
+%   All datasets are simulated. They contain no experimental measurements and
 %   no experimental information. A fixed random seed (rng(2026,'twister')) is
 %   used, so the files are reproducible; the script does not require any
 %   MATLAB toolbox.
@@ -82,10 +89,42 @@ T = table(track, frame, X, Y, I, ...
           'VariableNames', {'track', 'frame', 'x', 'y', 'intensity'});
 writetable(T, fullfile(outDir, 'SMT_tracks_demo.csv'));
 
+%% ---------------- 3. Simulated multicolor colocalization stacks ----------------
+% One 4-channel (4-page) uint16 stack per field of view, in the folder layout
+% expected by Colocalization/PCCcaclu.m (stage2 ... stage5, file name
+% Ch4_DR_00X.tif). Channel 2 is the reference signal; channels 3 and 4 are
+% progressively weaker, noisier copies of it, so that the Pearson correlation
+% coefficients come out as ch2-ch3 > ch2-ch4 > ch3-ch4.
+rng(2026, 'twister');           % fixed seed -> reproducible demo data
+stages = 2:5;                   % stage folders expected by PCCcaclu.m
+nImg   = 2;                     % number of fields of view per stage
+side   = 64;                    % image side (pixels)
+
+for s = stages
+    stageDir = fullfile(outDir, 'PCC', sprintf('stage%d', s));
+    if ~exist(stageDir, 'dir')
+        mkdir(stageDir);
+    end
+    for k = 1:nImg
+        base = 150 + 30*s;                                              % offset per stage
+        Ch1 = uint16(250*rand(side, side));                             % channel 1 (mostly background)
+        Ch2 = uint16(base + 800*rand(side, side));                      % channel 2 (reference signal)
+        Ch3 = uint16(min(65535, double(Ch2)*0.70 + 150*rand(side, side)));   % channel 3 (strongly correlated)
+        Ch4 = uint16(min(65535, double(Ch2)*0.45 + 300*rand(side, side)));   % channel 4 (partly correlated)
+        fn = fullfile(stageDir, sprintf('Ch4_DR_%03d.tif', k));
+        imwrite(Ch1, fn, 'tif', 'WriteMode', 'overwrite');
+        imwrite(Ch2, fn, 'tif', 'WriteMode', 'append');
+        imwrite(Ch3, fn, 'tif', 'WriteMode', 'append');
+        imwrite(Ch4, fn, 'tif', 'WriteMode', 'append');
+    end
+end
+
 fprintf('Simulated demo data written to %s\n', outDir);
 fprintf('  dSTORM_profile_01..%02d.csv : %d simulated septum profiles\n', ...
         numel(wid), numel(wid));
 fprintf('  SMT_tracks_demo.csv         : %d simulated trajectories x %d frames\n', ...
         nTr, nFr);
+fprintf('  PCC/stage2..stage5/         : %d simulated 4-channel stacks\n', ...
+        numel(stages)*nImg);
 
 end
