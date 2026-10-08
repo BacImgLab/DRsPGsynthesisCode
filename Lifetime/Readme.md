@@ -53,3 +53,16 @@ Fluorescence_Lifetime_Imaging contains Matlab scripts and Fiji plugins for proce
 4. Run Section 3 of `lifeTcalculationbernsen.m` to calculate per-pixel lifetime and intensity values
 
 
+---
+
+## Automated demo
+
+Steps 2 and 4 - the two steps that need no user interaction and no Fiji - are covered by the repository demo:
+
+    >> cd demo/Lifetime
+    >> runDemoLifetime
+
+or, from a terminal: `matlab -batch "cd demo/Lifetime; runDemoLifetime"`. It replays Sections 1
+and 3 of `lifeTcalculationbernsen.m` on the published example data set and writes everything into
+`demo/Lifetime/demo_output/`. See `demo/Lifetime/Readme.md` for the full description of the
+workflow, of the example data and of how the demo drives the module script.

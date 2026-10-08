@@ -106,3 +106,16 @@ Single_Molecule_Tracking contains Matlab scripts and Fiji plugins for analyzing 
 11. Remove drifting cells using `ReadImageJROI.m` and `RemoveDrift.m`
 
 
+---
+
+## Automated demo
+
+Step 9 - the only step with no user interaction - is covered by the repository demo:
+
+    >> cd demo/SMT
+    >> runDemoSMT
+
+or, from a terminal: `matlab -batch "cd demo/SMT; runDemoSMT"`. It runs the speed-distribution
+fitting (`dataprocessSMTWCF.m`) on the published example data set and writes everything into
+`demo/SMT/demo_output/`. See `demo/SMT/Readme.md` for the full description of the workflow and of
+the example data.

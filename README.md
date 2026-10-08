@@ -12,7 +12,15 @@ The repository provides analysis workflows for:
 
 The repository contains analysis scripts and workflows that use Fiji/ImageJ and other external software for image preprocessing, segmentation, registration, localization, trajectory analysis, and quantitative measurements.
 
-A small **simulated** demo dataset and a one-command demo workflow are provided in `demo/`; they allow the code to be tested without any experimental data, without Fiji/ImageJ and without any MATLAB toolbox (see [Demo](#demo)).
+Four self-contained, ready-to-run demo packages are provided in `demo/`, one per analysis workflow
+that has unattended steps: `demo/Colocalization/` (multicolor colocalization), `demo/Lifetime/`
+(fluorescence lifetime imaging), `demo/SMT/` (single-molecule tracking) and `demo/SMLM/`
+(3D-dSTORM septum width). Each runs the analysis steps that need no user interaction on the
+published example data set of that workflow, without Fiji/ImageJ, without acquisition hardware and
+without the raw imaging data (see [Demo](#demo)).
+The electron tomography workflow is interactive in all of its steps and ships as a documentation
+package instead: `demo/Tomo/` contains the module script, the published example data set and the
+step-by-step walkthrough, but no runnable entry point (see [Demo](#demo)).
 
 ---
 
@@ -30,7 +38,14 @@ The main analysis modules are organized according to the type of imaging data:
 
 Each module directory contains its own `Readme.md` with module-specific instructions.
 
-A small simulated demo dataset and a ready-to-run demo script covering three of these modules (multicolor colocalization, SMT and 3D-dSTORM septum width) are provided in `demo/` (see [Demo](#demo)).
+Four ready-to-run demo packages are provided in `demo/`, one for the multicolor colocalization
+workflow (`demo/Colocalization/`), one for the fluorescence-lifetime-imaging workflow
+(`demo/Lifetime/`), one for the single-molecule-tracking workflow (`demo/SMT/`) and one for the
+3D-dSTORM septum-width workflow (`demo/SMLM/`); each ships the module scripts it drives, the
+published example data set of that workflow and its own `Readme.md` (see [Demo](#demo)). A fifth,
+documentation-only package, `demo/Tomo/`, ships the module script of the electron tomography
+workflow together with its published example data set and walkthrough; it has no runnable entry
+point because both steps of that workflow are interactive.
 
 ---
 
@@ -213,6 +228,10 @@ This module is used to quantify septum width from 3D-dSTORM imaging data.
 
 Quantitative septum-width measurements based on FWHM analysis.
 
+Of the two steps of this workflow only the second one runs without a human — the line ROIs are
+drawn by hand in Fiji — so the demo starts from the published example data set (the exported
+intensity profiles) and replays the FWHM calculation: [`demo/SMLM/`](demo/SMLM/Readme.md).
+
 ---
 
 ## 5. Electron Tomography Septum Width Analysis
@@ -243,6 +262,12 @@ This module is used to quantify septum width from electron tomography images.
 
 Quantitative measurements of septum width.
 
+Both steps of this workflow are interactive — the septum ROI is drawn by hand in Fiji, and
+`TomowidthCaclu.m` asks for two clicks in a MATLAB figure window to define the main axis of the
+septum — so the module ships no automated demo. The published example data set (the tomographic
+slices, the drawn ROIs and the resulting width measurements) and the step-by-step walkthrough are
+available in [`demo/Tomo/`](demo/Tomo/Readme.md).
+
 ---
 
 ## Requirements
@@ -257,6 +282,7 @@ The analysis workflows use the following software and plugins, depending on the 
 * ThunderSTORM (dev-2016-09-04-b1)
 * HyperStackReg (Version 5.7)
 * PureDenoise
+* For the S1 ridge-distance step of the colocalization demo (`Colocalization/DemoS1AnalysisW.m`): the Optimization Toolbox (`lsqcurvefit`) and the Image Processing Toolbox (`rgb2ind`). Every other script and demo step runs on base MATLAB.
 
 ### Operating system
 
@@ -323,7 +349,7 @@ Obtaining the repository and preparing the MATLAB scripts takes less than 5 minu
 
 Installing MATLAB, Fiji/ImageJ and the plugins from scratch may take longer; the required time depends on the user's computer, network connection and existing software environment.
 
-Running the simulated demo described in the [Demo](#demo) section requires only MATLAB and takes less than a minute (≈ 20–30 s).
+Running the demos described in the [Demo](#demo) section requires only MATLAB and takes about three to four minutes in total (≈ 60 s for the colocalization demo, ≈ 10 s for the FLIM demo, ≈ 20 s for the SMT demo and ≈ 105 s for the 3D-dSTORM demo).
 
 ---
 
@@ -386,12 +412,19 @@ The required input data depend on the analysis module.
 * 2D projections of 3D-dSTORM localization data
 * Manually defined septum ROIs
 
+The published example data set of this workflow — the `X,Y` intensity profiles of 116 WT septum
+ROIs, one folder per cell-cycle stage (S0: 51, S1: 65) — ships in
+`demo/SMLM/demo_data/01_wt_s0_s1_profiles/`.
+
 ### Electron tomography
 
 **Input:**
 
 * 2D electron tomography images
 * Manually defined septum ROIs
+
+The published example data set of this workflow — two tomographic slices, the two Fiji polygon ROIs
+and the resulting width measurements — ships in `demo/Tomo/demo_data/`.
 
 ---
 
@@ -422,7 +455,18 @@ The analysis code in this repository was used to process imaging data described 
 
 ### Testing the code without experimental data
 
-The repository includes a small simulated demo dataset and a single command that runs three representative workflows on it: the septum-width analysis of 3D-dSTORM intensity profiles, a trajectory analysis of simulated single-molecule tracking data, and the Pearson-correlation calculation of a simulated multicolor colocalization dataset. See the [Demo](#demo) section below.
+Four self-contained demo packages are included in `demo/`, and none of them needs Fiji/ImageJ or the acquisition hardware:
+
+* `demo/Colocalization/runDemoColoc.m` runs the two steps of the multicolor colocalization pipeline that need no user interaction, on the **published example data set** shipped in `demo/Colocalization/demo_data/`: the S1 septum demograph analysis (`Colocalization/DemoS1AnalysisW.m`) and the pairwise Pearson correlation between the channels (`Colocalization/PCCcaclu.m`).
+* `demo/Lifetime/runDemoLifetime.m` runs the two steps of the FLIM pipeline that need no user interaction, on the **published example data set** shipped in `demo/Lifetime/demo_data/`: the image stacking (`Lifetime/lifeTcalculationbernsen.m`, Section 1) and the per-pixel lifetime and intensity quantification (Section 3).
+* `demo/SMT/runDemoSMT.m` runs the one step of the single-molecule-tracking pipeline that needs no user interaction, on the **published example data set** shipped in `demo/SMT/demo_data/`: the log-normal fitting of the speed distribution of the directed FtsW segments (`SMTanalysis/dataprocessSMTWCF.m`).
+* `demo/SMLM/runDemoSMLM.m` runs the one step of the 3D-dSTORM septum-width pipeline that needs no user interaction, on the **published example data set** shipped in `demo/SMLM/demo_data/`: the FWHM calculation of every septum profile (`3D-dSTORM/dSTORMwidthcaclu.m`).
+
+The upstream parts of all four workflows are interactive by design and are not replayed; see the [Demo](#demo) section below.
+
+The electron tomography workflow has no unattended step at all — the ROI is drawn by hand in Fiji and `Tomo/TomowidthCaclu.m` asks for two clicks in a figure window — so it ships no runnable demo; its published example data set and walkthrough are in `demo/Tomo/` instead.
+
+See the [Demo](#demo) section below for the exact commands and the expected output.
 
 ### Reproducing the quantitative results
 
@@ -434,94 +478,283 @@ To reproduce an analysis:
 4. Use the analysis parameters specified in the script and/or manuscript Methods.
 5. Apply the same data-selection and segmentation criteria described in the manuscript.
 
+| Quantitative result (figure / table) | Analysis module | Script(s) |
+|---|---|---|
+| Fig. 1b, c | Demography / cell-cycle staging | `Colocalization/BeforeDemoProcess.m` → `Colocalization/DemoDR_stage35.m` (cell-cycle classification: [BacImgLab/DeCNN](https://github.com/BacImgLab/DeCNN)) |
+| Fig. 1c–e, Fig. 4a–e; Supplementary Table 5 | ET septum width | `Tomo/TomowidthCaclu.m` |
+| Fig. 2a; Supplementary Fig. 7a, c | Colocalization (Pearson correlation) | `Colocalization/PCCcaclu.m` |
+| Fig. 2b–d | Septal enrichment, demographs, displacement | `Colocalization/S0S1select.m`, `Colocalization/lineProfile.m`, `Colocalization/demoSmooth.m`, `Colocalization/DemoS1AnalysisW.m` |
+| Fig. 3, Fig. 6a–d; Supplementary Fig. 9, 10f–g | FLIM lifetime and intensity | `Lifetime/lifeTcalculationbernsen.m` |
+| Fig. 4f–g; Supplementary Table 5 | 3D-dSTORM / 3D-SMLM septum width | `3D-dSTORM/dSTORMwidthcaclu.m` |
+| Fig. 5a–g; Supplementary Fig. 15–17 | SMT: localization, linking, state classification, MSD, speed distributions | `SMTanalysis/SMTdataPrepare.m` → ThunderSTORM → `SMTanalysis/spotsLinking.m` → `SMTanalysis/RefineTraceSegDr.mlapp` → `SMTanalysis/statesClassifyDr.m` → `SMTanalysis/dataprocessSMTWCF.m` and `SMTanalysis/MSDsingle2D.m` / `SMTanalysis/CDF_logCalc.m` (MSD, step-length CDF and velocity fits: `SMTanalysis/linfitR.m`) |
+| Fig. 5d; Supplementary Fig. 16d–g | 2D-projection correction of FtsW speed | `SMTanalysis/unwrapTraj.m`, `SMTanalysis/DrunwrapX.m`, `SMTanalysis/DrunwrapY.m` |
+
+Raw imaging datasets (single-molecule localization movies, FLIM photon data and electron-tomography tilt series) are not included in this repository because of their very large size; they are available from the corresponding author upon reasonable request. The multicolor colocalization, the FLIM, the single-molecule-tracking, the 3D-dSTORM and the electron-tomography modules are instead shipped with the published example data set of the Supplementary Information (see [Demo](#demo); for the tomography the shipped slices are the 2D images the ROIs were drawn on, not the tilt series).
+
+---
+
 ## Demo
 
-A small **simulated** demo dataset is provided in `demo/demo_data/`, together with a single command that runs three representative analysis workflows on it. Running the demo requires only base MATLAB: no Fiji/ImageJ, no additional plugin, no MATLAB toolbox and no experimental data are needed.
+`demo/` contains four self-contained, ready-to-run demo packages, one per analysis workflow that has unattended steps, plus one documentation package for the electron tomography workflow. None of them needs acquisition hardware or raw imaging data, and none of them writes into the repository tree: all output goes to a `demo_output/` folder, which is not tracked by git.
 
-### Demo dataset
+Each package lives in its own subfolder together with the module scripts it drives, the published example data set of that workflow and the module `Readme.md`, so the folder can be downloaded and used on its own.
 
-| File | Content | Used by |
+| Demo | Entry point | Data | MATLAB requirements | Run time |
+|---|---|---|---|---|
+| Multicolor colocalization | `demo/Colocalization/runDemoColoc.m` | published example data set (`demo/Colocalization/demo_data/`) | step 2 runs on base MATLAB; step 1 also needs the Optimization and Image Processing Toolboxes | ≈ 1 min |
+| Fluorescence lifetime imaging | `demo/Lifetime/runDemoLifetime.m` | published example data set (`demo/Lifetime/demo_data/`) | base MATLAB only | ≈ 10 s |
+| Single-molecule tracking | `demo/SMT/runDemoSMT.m` | published example data set (`demo/SMT/demo_data/`) | Optimization and Statistics and Machine Learning Toolboxes | ≈ 20 s |
+| 3D-dSTORM septum width | `demo/SMLM/runDemoSMLM.m` | published example data set (`demo/SMLM/demo_data/`) | base MATLAB only | ≈ 2 min |
+| Electron tomography | — (documentation only) | published example data set (`demo/Tomo/demo_data/`) | Mapping Toolbox (`polyxpoly`) if the script is run by hand | — |
+
+### Single-molecule-tracking example data
+
+`demo/SMT/demo_data/` holds the item of the published example data set that the SMT demo reads, in
+the numbering of the Supplementary example data:
+
+| Folder | Content | Read by the demo |
 |---|---|---|
-| `demo/demo_data/dSTORM_profile_01.csv` … `_05.csv` | Five simulated septum intensity profiles of a 2D projection of 3D-dSTORM data. Column 1: distance along the line ROI (nm); column 2: gray value. | `3D-dSTORM/dSTORMwidthcaclu.m` |
-| `demo/demo_data/SMT_tracks_demo.csv` | Simulated 2D single-molecule tracking dataset: 12 molecules × 200 frames, 0.16 µm per pixel, 110 ms per frame. Columns: track, frame, x, y, intensity. | `demo/runDemoSMT.m` (uses `SMTanalysis/MSDsingle2D.m`, `SMTanalysis/CDF_logCalc.m` and `SMTanalysis/linfitR.m`) |
-| `demo/demo_data/PCC/stage2 … stage5/Ch4_DR_00X.tif` | Eight simulated 4-channel (4-page) 64 × 64 uint16 TIFF stacks, two fields of view per stage folder. Channels 2, 3 and 4 share a common spatial structure with decreasing correlation. | `Colocalization/PCCcaclu.m` via `demo/runDemoPcc.m` |
+| `04_classified_traces/` | `FtsW-all.mat` — the output of the state-classification step: `SegVSRPTC` (1405 × 7 = velocity, StD, R, P, dwell time, location flag, state), the classification thresholds (`Pmin = 0.8`, `Rmax1 = 0.5`, `Rmax2 = 0.3`) and the speed and dwell-time vectors `Vd`/`Vs`/`Td`/`Ts` (487 directional and 917 stationary segments). | step 2 (input) |
 
-All files are simulated and contain no experimental measurements. They are reproducible: the septum profiles and the colocalization stacks are generated deterministically, and the tracking dataset is regenerated by `demo/makeDemoData.m` with a fixed random seed (`rng(2026,'twister')`).
+The other three items of the published SMT example data set — the ThunderSTORM localisation table,
+the linked trajectories and the segmented trajectories — are not read by the demo and are not
+shipped; they are available from the corresponding author. See `demo/SMT/Readme.md` for the full
+workflow, the description of all four items and the note on the variable names (`DataSMT` vs
+`SegVSRPTC`).
+
+### Multicolor colocalization example data
+
+`demo/Colocalization/demo_data/` holds the example data set that accompanies the multicolor colocalization workflow, in the six items of the Supplementary example data. The folder names are the English translation of the original item names; the image and `.mat` files themselves are unchanged. 90 files, ≈ 13 MB in total.
+
+| Folder | Content | Read by the demo |
+|---|---|---|
+| `01_preprocessed/` | Central 512 × 512 crop of the middle Z-plane of the four preprocessed channels (BF, 488, 561, 647), single precision. | — |
+| `02_cell_cycle_stacks/` | The four single-channel images of the eight example cells, one folder per channel (`C1-BF`, `C2-647`, `C3-561`, `C4-488`) and one subfolder per cell-cycle stage (`stage1` … `stage5`). 150 × 150 uint16. | — |
+| `03_channel_merged/` | The same eight cells merged into four-page stacks (`Ch4_DR_*.tif`, pages 1..4 = C1..C4). | — |
+| `04_septum_profiles/` | Per-cell output of the manual septum profiling: `Ch4_DR_*.tif` plus `Processed/Ch4_DR_*_rot.tif` (septum rotated to vertical) and `Processed/Ch4_DR_*_data.mat`. | step 2 (input) |
+| `05_sorted_demograph/` | The demographs: `S0/dDratioS0Channel1..4.mat` (80 × 1175) and `S1/dDratioS1Channel1..4.mat` (80 × 1100). One column per cell, sorted by septum maturity. | — |
+| `06_smoothed_demograph/` | The smoothed demographs: `S0|S1/demo_sm_norm2..4new.mat` (80 × 80). | step 1 (input: `S1` channels 2 and 4) |
+
+The folder names follow the numbering of the Supplementary example data, because the workflow itself uses "stage" for two different things: the six example-data items above, and the **cell-cycle** stages `stage1` … `stage5`, which appear as subfolders of `02_cell_cycle_stacks` and of `03`/`04`. Only the cell-cycle folders keep the word *stage*.
+
+Three notes on this data set:
+
+* Only `04_septum_profiles/` and `06_smoothed_demograph/` are read by `runDemoColoc`; the other four folders are shipped because they are part of the published example data set, not because the demo needs them.
+* The four files in `01_preprocessed/` are **crops**, not the complete preprocessing output. The full stacks are 1006 × 1006 × 16 slices in single precision, ≈ 62 MiB per channel — above the 25 MiB single-file limit of the GitHub web uploader and far above a *small* dataset. The crop covers rows and columns 250 : 761 of the middle Z-plane (slice 8 of 16) and keeps the original intensity values, dtype and scaling.
+* `05_sorted_demograph/` and `06_smoothed_demograph/` describe the whole pooled population of the manuscript (1175 cells for S0, 1100 for S1), whereas only eight of those cells are shipped individually as images in `02`–`04`.
+
+### A note on the file names
+
+Two file names differ between the manuscript text and the scripts:
+
+| In the manuscript text | Written by the script | Where |
+|---|---|---|
+| `AmemData`, `Amem.tif` | `WmemData.mat`, `Wmem.tif` | output of `Colocalization/DemoS1AnalysisW.m` |
+| `dDratioS1Channel2`, `dDratioS1Channel4` | `demo_S1_smooth_mem.mat`, `demo_S1_smooth_W.mat` | input of `Colocalization/DemoS1AnalysisW.m` |
+
+The demo follows the scripts: it feeds the published smoothed demographs `demo_sm_norm2new.mat` (channel 2, membrane) and `demo_sm_norm4new.mat` (channel 4, protein) of `06_smoothed_demograph/S1/` to step 1 under the two names the script expects, and it reports the output as `WmemData.mat` / `Wmem.tif`.
+
+### FLIM example data
+
+`demo/Lifetime/demo_data/` holds the published example data set of the FLIM workflow in the three
+items of the Supplementary example data. The folder names are the English translation of the
+original item names; the image and metadata files themselves are unchanged. 35 files, ≈ 52 MB in
+total.
+
+| Folder | Content | Read by the demo |
+|---|---|---|
+| `01_lasx_export/` | The LAS X FLIM/FCS export: for every field of view (`0`, `1`, `2`) and every cell (1, 2) one intensity image (`_ch0.ome.tif`) and one lifetime image (`_ch1.ome.tif`), 1024 × 1024 uint16, plus the LAS X `MetaData/` folder. | step 1 (input) |
+| `02_stacked/` | `WT50uMintensityStack.tif` and `WT50uMlifetimeStack.tif`, 6 pages of 1024 × 1024 uint16 — the output of the image-stacking step. | step 1 (reference), step 2 (input) |
+| `03_background_masked/` | `WT50uMintensityStack-binary.tif` (the Bernsen mask, 8-bit, 0/255), `WT50uMintensityStack-filter.tif` and `WT50uMlifetimeStack-filter.tif` (the background-free stacks). | step 2 (input and reference) |
+
+`02_stacked/` and `03_background_masked/` serve a second purpose in the demo: they are the reference the wrappers compare their own output with, so the demo shows that it reproduces the published stacks and the published background-free images page by page.
+
+### Electron-tomography example data
+
+`demo/Tomo/demo_data/` holds the two items of the published example data set of the electron
+tomography workflow, under the English name of the original item. 8 files, ≈ 1.5 MB in total.
+
+| Folder | Content | Role in the workflow |
+|---|---|---|
+| `01_manual_septum_roi/` | Two 2D tomographic slices of WT cells (963 × 1126 and 933 × 1143 pixel, 8-bit RGB JPEG with a 200 nm scale bar) and two Fiji polygon ROIs drawn around their septa (`...S0Roi.roi`, 54 vertices; `...S1Roi_1.roi`, 30 vertices). | step 1 (output) / step 2 (input) |
+| `02_septum_width_calculation/` | The published script output for the two cells: the annotated figures (1609 × 4300 JPEG) and the result files (`Res` = distance along the middle line, local width, midpoint x and y, in nm; plus `CoordXY`). | step 2 (output) |
+
+The two published result files describe a septum width of 27.9 ± 3.7 nm (range 22.7–51.7 nm, over
+714 nm of axis, 715 samples, `S0Roi`) and 27.7 ± 8.6 nm (range 10.3–76.4 nm, over 126 nm of axis,
+125 samples, `S1Roi_2`).
+
+There is **no runnable entry point** in `demo/Tomo/`: the septum ROI is drawn by hand in Fiji, and
+`TomowidthCaclu.m` itself asks for two clicks in a MATLAB figure window (`ginput(2)`) to define the
+main axis of the septum, so an unattended replay would have to substitute the very step the module
+exists for. `demo/Tomo/Readme.md` documents both steps in full, and carries two notes a reader
+should be aware of: the shipped `...S1Roi_1.roi` and the published `...S1Roi_2.mat`/`.jpg` are not a
+matched pair (the result files were produced from a second ROI that is not part of the example
+data), and the published `...S1Roi_2.mat` carries five columns per row of `Res` where the current
+script writes four.
+
+### 3D-dSTORM septum-width example data
+
+`demo/SMLM/demo_data/` holds the published example data set of the 3D-dSTORM septum-width workflow
+under the English name of the original item. 116 files, ≈ 330 KB in total.
+
+| Folder | Content | Read by the demo |
+|---|---|---|
+| `01_wt_s0_s1_profiles/WTS0/` | 51 septum profiles of the S0 cells: `WT_S0_width_roiN_5nmGuass_500mW_roi1_z450_650_Values.csv`, an `X,Y` header plus one row per sample (`X` = distance along the line ROI, `Y` = grey value). | step (input) |
+| `01_wt_s0_s1_profiles/WTS1/` | 65 septum profiles of the S1 cells, same format. | step (input) |
+
+These files are the Fiji export of step 1 of the workflow — the intensity profile along every
+manually drawn line ROI — so they are exactly what the FWHM step consumes. All profiles are
+sampled on the same 0.005 µm grid (5 nm); the line ROIs span 0.59–1.21 µm.
 
 ### Instructions to run on the demo data
 
-In MATLAB:
+All four demos are packaged in their own folder, so that each folder is self-contained and can also be
+run after downloading that folder alone:
 
-    >> cd demo
-    >> runDemo
+    >> cd demo/Colocalization
+    >> runDemoColoc
 
-or, from a terminal:
+    >> cd demo/Lifetime
+    >> runDemoLifetime
 
-    matlab -batch "cd demo; runDemo"
+    >> cd demo/SMT
+    >> runDemoSMT
 
-`runDemo.m` executes four steps:
+    >> cd demo/SMLM
+    >> runDemoSMLM
 
-1. `makeDemoData.m` regenerates the simulated datasets in `demo/demo_data/` (septum profiles, tracking table and multicolor stacks).
-2. `runDemoDstorm.m` copies the profile CSVs into `demo/demo_output/dSTORM_profiles/` and runs `3D-dSTORM/dSTORMwidthcaclu.m` on them.
-3. `runDemoSMT.m` analyses `SMT_tracks_demo.csv` with `MSDsingle2D.m`, `CDF_logCalc.m` and `linfitR.m`.
-4. `runDemoPcc.m` assembles an isolated working copy of the stage folders and runs `Colocalization/PCCcaclu.m` on the simulated 4-channel stacks.
+All four can also be started from a terminal, e.g. `matlab -batch "cd demo/SMT; runDemoSMT"`.
+
+`demo/Tomo/` has no entry point to run: follow the manual walkthrough in `demo/Tomo/Readme.md` to
+reproduce the published tomography results by hand.
+
+`demo/Colocalization/runDemoColoc.m` executes the two steps of the multicolor workflow that run unattended, driving the module scripts that the folder carries alongside the entry point:
+
+1. `runDemoColocS1.m` — **S1 septum demograph analysis**. It feeds channels 2 (membrane) and 4 (protein) of the smoothed S1 demograph to `DemoS1AnalysisW.m`, which fits a two-component Gaussian model to each of the 80 columns and records the first peak position of both profiles, so that the distance between the protein ridge and the membrane ridge across the septum can be measured.
+2. `runDemoColocPcc.m` — **PCC analysis**. It assembles an isolated working copy of the per-cell septum profiles (example data 4) and runs `PCCcaclu.m`, which computes the pairwise Pearson correlation coefficients of channels 2, 3 and 4 for every single cell and writes one table per cell-cycle stage plus the merged one.
+
+`demo/Lifetime/runDemoLifetime.m` executes the two steps of the FLIM workflow that run unattended, driving the module script that the folder carries alongside the entry point:
+
+1. `runDemoLifetimeStacking.m` — **image stacking**. It stages the published LAS X export (example data 1) under the file names `lifeTcalculationbernsen.m` expects and replays **Section 1** of that script, which reads the intensity image (`_ch0`) and the lifetime image (`_ch1`) of every cell of every field of view and appends them to an intensity and a lifetime stack.
+2. `runDemoLifetimeQuantify.m` — **lifetime and intensity quantification**. It stages the stacks (example data 2) together with the published Bernsen mask (example data 3) and replays **Section 3** of the script, which sets every background pixel of both stacks to zero, rescales the lifetime grey values to nanoseconds, collects the remaining pixels per page, builds the lifetime histogram on the grid 0.30 : 0.03 : 3.60 ns and computes the mean and the standard deviation of both signals.
+
+`demo/SMT/runDemoSMT.m` executes the one step of the SMT workflow that runs unattended:
+
+1. `runDemoSMTVelocity.m` — **speed-distribution fitting**. It assembles an isolated working copy of the classified trajectory table (example data 4), adds the variable alias the module script expects (see the note on the file names in `demo/SMT/Readme.md`), and runs `dataprocessSMTWCF.m`, which computes the empirical CDF of the directed-segment speeds above 1 nm/s on 21 log-spaced bins between 1 and 100 nm/s, fits a single- and a double-log-normal population by least squares, bootstraps both fits over 200 resamples and reconstructs the two probability density functions for the comparison with the speed histogram.
+
+The other steps of all three workflows are **not replayed**, because they need a human or an external GUI. For the multicolor colocalization workflow these are the drift correction and the chromatic-aberration correction in Fiji (`MultiChannelDriftCorrection.m` via `HyperStackReg`, `MultiChannelChromaticAberration.m`), the denoising with the Fiji `PureDenoise` plugin, the cell-cycle classification with Cellpose3 together with [BacImgLab/DeCNN](https://github.com/BacImgLab/DeCNN), and the septum profiling (`DemoDR_stage35.m`, `DemoDR_stage2.m`), which requires the S0 and S1 septum lines to be drawn by hand in a figure; `runDemoColoc` therefore starts from the published example data 4 and 6. For the FLIM workflow these are the LAS X FLIM/FCS export, which runs in the acquisition software, and the Bernsen background masking (`bersenThtest.ijm`), which runs in Fiji; `runDemoLifetime` therefore starts from the exported images (example data 1) and from the published mask (example data 3). For the SMT workflow these are the ROI cropping (`SMTdataPrepare.m`), the ThunderSTORM localisation, the chromatic-aberration correction (`CACorrectionofSMTsplitter.m`), the Cellpose3 segmentation, the trajectory linking (`spotsLinking.m`), the interactive trajectory segmentation in the `RefineTraceSegDr` app and the state classification (`statesClassifyDr.m`, which opens a save dialog and waits for a button press); `runDemoSMT` therefore starts from the published example data 4.
 
 ### Expected output
 
-After the run, `demo/demo_output/` contains:
+After `runDemoColoc`, `demo/Colocalization/demo_output/` contains:
 
-    demo/demo_output/
-    ├── dSTORM_profiles/
-    │   ├── Plots/AllWidths.csv                        FWHM of each profile (1 header + 5 rows)
-    │   └── Plots/dSTORM_profile_0X_HalfPeakWidth.png  annotated FWHM plot per profile
-    ├── SMT_MSD_demo.csv                               lag time (s), mean MSD (µm²), SEM (µm²)
-    ├── SMT_MSD_demo.png                               log-log MSD curve
-    ├── SMT_stepCDF_demo.csv                           step length (µm), cumulative probability (101 bins)
-    ├── SMT_stepCDF_demo.png                           step-length CDF plot
-    ├── SMT_velocity_demo.csv                          per-trajectory linear-fit velocity (12 rows)
+    demo/Colocalization/demo_output/
+    ├── S1_peak_distance/
+    │   ├── WmemData.mat                                 mui_poi, mu1_mem, ParameterAll
+    │   └── Wmem.tif                                     80 pages, 560 x 420, ≈ 55 MB
     └── PCC/
-        ├── Merged_PCC_Values.csv                      pairwise PCC and mean intensities (8 rows)
-        └── work/                                      isolated working copy used for the run
+        ├── Merged_PCC_Values.csv                        all cells: FileName, C2C3, C2C4, C3C4, meanC2..4
+        ├── stage2_PCC_Values.csv                        the same table per cell-cycle stage
+        ├── stage3_PCC_Values.csv
+        ├── stage4_PCC_Values.csv
+        └── stage5_PCC_Values.csv
 
-All results are written into `demo/demo_output/`, which is not tracked by git; the folder also holds a scratch working copy (`demo/demo_output/PCC/work/`) that `runDemoPcc.m` assembles so that `PCCcaclu.m` can run without modifying the repository tree.
+After `runDemoSMT`, `demo/SMT/demo_output/` contains:
 
-Expected values for the delivered data (MATLAB R2024a):
+    demo/SMT/demo_output/
+    └── velocity_distribution/
+        ├── FtsW-S1-Cef.mat                              the complete Result struct of the module script
+        ├── FtsW_speed_CDF.png                           CDF of the speeds with both fits and residuals
+        ├── FtsW_speed_PDF.png                           speed histogram with the two reconstructed PDFs
+        └── SMT_velocity_summary.csv                     the fitted parameters in a flat two-column table
 
-* `AllWidths.csv`: FWHM ≈ 23.7, 28.4, 32.7, 37.3 and 42.1 nm for the five simulated septa (the simulated half-widths σ are 10, 12, 14, 16 and 18 nm, i.e. FWHM ≈ 2.355·σ).
-* `SMT_MSD_demo.csv`: 50 lag times from 0.11 s to 5.50 s; the mean MSD increases approximately linearly from ≈ 0.015 µm² (0.11 s) to ≈ 0.59 µm² (5.50 s), corresponding to an effective diffusion coefficient of ≈ 0.027 µm²/s (the simulated values were D = 0.005, 0.02 and 0.05 µm²/s plus 30 nm localization uncertainty).
-* `SMT_stepCDF_demo.csv`: 50 % of the simulated steps are shorter than ≈ 0.09 µm and 90 % shorter than ≈ 0.20 µm.
-* `SMT_velocity_demo.csv`: 12 rows with a mean linear-fit speed of ≈ 0.07 µm/s. (For demonstration the linear fit is applied to whole trajectories here; in the analysis of the experimental data it is applied to trajectory segments after state segmentation, see `statesClassifyDr.m` / `RefineTraceSegDr.mlapp`.)
-* `PCC/Merged_PCC_Values.csv`: 8 rows (2 fields of view × 4 stage folders) with the three pairwise Pearson correlation coefficients and the mean channel intensities. On the simulated stacks the mean values are PCC(ch2–ch3) ≈ 0.966, PCC(ch2–ch4) ≈ 0.771 and PCC(ch3–ch4) ≈ 0.745, reproducing the decreasing correlation that was used to generate the data.
-* The console lists the four steps and ends with `Demo finished in ≈ 25 s`.
+After `runDemoLifetime`, `demo/Lifetime/demo_output/` contains:
+
+    demo/Lifetime/demo_output/
+    ├── stacking/
+    │   ├── WT50uMintensityStack.tif                     6 pages, 1024 x 1024, uint16
+    │   ├── WT50uMlifetimeStack.tif                      6 pages, 1024 x 1024, uint16
+    │   └── Lifetime_stacking_summary.csv                page counts and reference comparison
+    └── quantification/
+        ├── WT50uMintensityStack-filter.tif              background set to zero, 6 pages
+        ├── WT50uMlifetimeStack-filter.tif               background set to zero, 6 pages
+        ├── LifetimeResults.mat                          hLT, Result, LT_all, LT_mean, In_mean, In_all
+        ├── Lifetime_histogram.png                       the lifetime histogram drawn by the script
+        ├── Lifetime_summary.csv                         the numbers printed below
+        └── Lifetime_per_page.csv                        pixel count and means per page
+
+After `runDemoSMLM`, `demo/SMLM/demo_output/width/` contains:
+
+    demo/SMLM/demo_output/width/
+    ├── SMLM_width_summary.csv                all 116 profiles: FileName, HalfPeakWidth,
+    │                                         Stage, HalfPeakWidth_nm
+    ├── SMLM_width_stats.csv                  per stage: nProfiles, nNaN, nWidths, mean,
+    │                                         median, sd, min, max (µm)
+    ├── WTS0/
+    │   ├── AllWidths.csv                     the summary as written by the module script
+    │   ├── *_HalfPeakWidth.png               one annotated FWHM figure per S0 septum (51)
+    │   └── work/                             the isolated working copy used for the run
+    └── WTS1/
+        ├── AllWidths.csv                     the summary as written by the module script
+        ├── *_HalfPeakWidth.png               one annotated FWHM figure per S1 septum (65)
+        └── work/                             the isolated working copy used for the run
+
+All four demos also leave the scratch working copies that the wrappers assemble (`*/demo_output/*/work`), and `demo_output/` is not tracked by git.
+
+Expected values for the multicolor colocalization demo (MATLAB R2024a):
+
+* Step 1: `columns fitted : 80`, none of the 80 fits returns `NaN`. The protein ridge (channel 4, mNeonGreen) sits at 31.6 px on average (27.2–36.2 px) and the membrane ridge (channel 2, Potomac red) at 24.6 px (22.5–28.1 px), i.e. a mean ridge separation of 7.0 px (median 7.2 px, range 2.7–11.9 px). `Wmem.tif` has 80 pages of 560 × 420 px.
+* Step 2: `cells analysed : 8` over the four cell-cycle stages; mean PCC(ch2–ch3) = 0.613, PCC(ch2–ch4) = 0.389 and PCC(ch3–ch4) = 0.909. The per-cell values are listed in `Merged_PCC_Values.csv`; PCC(ch3–ch4) stays within 0.862–0.979, while PCC(ch2–ch4) spreads over 0.172–0.561.
+* The console lists the two steps and ends with `=== Colocalization demo finished in ≈ 60 s ===`.
+
+Expected values for the single-molecule-tracking demo (MATLAB R2024a):
+
+* 1405 segments in the table, of which 238 are directional and 877 stationary (location flag 3); 226 directional segments are faster than the 1 nm/s threshold and enter the CDF.
+* Single log-normal fit: mean speed V = 14.40 nm/s (P = 1.000, µ = 2.200, σ = 0.967), bootstrap SEM 1.04 nm/s.
+* Double log-normal fit: V1 = 2.69 nm/s (18.0 % of the population, σ = 0.31) and V2 = 15.74 nm/s (82.0 %, σ = 0.76), bootstrap SEM 4.38 and 1.49 nm/s; the two-population model is the one reported for FtsW.
+* Maximum absolute CDF residual: 0.045 (single fit) and 0.025 (double fit).
+* The console ends with `=== SMT demo finished in ≈ 20 s ===`.
+
+Expected values for the FLIM demo (MATLAB R2024a):
+
+* Step 1: `images to stack : 12`; both stacks have 6 pages of 1024 × 1024 pixel in uint16 and are **identical** to the published stacks of example data 2 (`6 of 6` pages for the intensity stack and for the lifetime stack).
+* Step 2: `images analysed : 6` with **195 213 signal pixels** in total (19 908, 39 595, 19 534, 35 512, 27 848 and 52 816 per page); none of the pixels has a `NaN` lifetime. The lifetime is 1.269 ± 0.244 ns (range 0.690–2.143 ns) and the intensity 506.5 ± 119.7 a.u. (range 19–1037). The lifetime histogram has 110 bins between 0.30 and 3.60 ns and peaks at 0.0505 probability at 1.04 ns, with a second local maximum near 1.4 ns. Both background-free stacks are **identical** to the published images of example data 3 (`6 of 6` pages each).
+* The console lists the two steps and ends with `=== FLIM demo finished in ≈ 10 s ===`.
+
+Expected values for the 3D-dSTORM septum-width demo (MATLAB R2024a):
+
+* **WTS0**: 51 profiles, none of them without an FWHM. Width 0.1097 ± 0.0206 µm (median 0.1068, range 0.0681–0.1775 µm) = **109.7 ± 20.6 nm**.
+* **WTS1**: 65 profiles, none of them without an FWHM. Width 0.1062 ± 0.0309 µm (median 0.0989, range 0.0564–0.2030 µm) = **106.2 ± 30.9 nm**.
+* The per-profile values are listed in `SMLM_width_summary.csv` and the per-stage statistics in `SMLM_width_stats.csv`; `WTS0/AllWidths.csv` and `WTS1/AllWidths.csv` are the tables exactly as the module script writes them.
+* The console ends with `=== SMLM demo finished in ≈ 2 min ===`.
 
 ### Expected run time for the demo
 
-≈ 20–30 s on a normal desktop computer with MATLAB R2024a, including writing all figures (measured 19.5 s, 23.1 s and 25.2 s on Windows 10/11 with MATLAB R2024a). All four steps together stay well below one minute. The very first run after a cold start of MATLAB can take a few minutes because the graphics renderer is initialized then; subsequent runs take ≈ 25 s.
+`runDemoColoc`: ≈ 1 min on a normal desktop computer with MATLAB R2024a (measured 59.8 s and 63.1 s), of which about 55 s is step 1 — the 80 × 2 Gaussian fits plus one figure and one TIFF page per demograph column. Step 1 writes an uncompressed 80-page TIFF of ≈ 55 MB into `demo/Colocalization/demo_output/`; delete that folder afterwards if disk space matters. Step 2 takes 1–2 s.
+
+`runDemoSMT`: ≈ 20 s on the same machine (measured 17.2 s), of which the 200 × 2 bootstrap fits take the larger share.
+
+`runDemoLifetime`: ≈ 10 s on the same machine (measured 8.5 s and 9.1 s), of which the writing and re-reading of the six-page stacks takes the larger share. The demo leaves ≈ 100 MB of output and working copies in `demo/Lifetime/demo_output/`; delete that folder afterwards if disk space matters.
+
+`runDemoSMLM`: ≈ 2 min on the same machine (measured 106 s and 129 s), almost all of it in the 116 figures the module script draws and saves. The demo leaves ≈ 11 MB of output and working copies in `demo/SMLM/demo_output/`; delete that folder afterwards if disk space matters.
+
+The very first run after a cold start of MATLAB can take a few minutes because the graphics renderer is initialized then; subsequent runs take the values above.
 
 ### Scope of the demo
 
-The demo covers the numerical-analysis entry point of each module, i.e. the first
-point in every pipeline that can be executed without human interaction. The
-upstream steps of all modules are interactive by design — they require manually
-drawn ROIs, per-cell visual confirmation, or external GUI tools (Fiji/ImageJ
-plugins, Cellpose, ThunderSTORM, the LAS X export, or the `RefineTraceSegDr` App
-Designer app) — and therefore cannot be replayed unattended.
+The four demos cover the numerical-analysis entry points of the multicolor colocalization, the FLIM, the single-molecule-tracking and the 3D-dSTORM septum-width workflow, i.e. the first points in the four pipelines that can be executed without human interaction. The upstream steps of all four workflows are interactive by design — they require manually drawn ROIs, per-cell visual confirmation, or external GUI tools (Fiji/ImageJ plugins, Cellpose, ThunderSTORM, the LAS X export, or the `RefineTraceSegDr` App Designer app) — and therefore cannot be replayed unattended.
 
 | Module | Covered by the demo | Demo entry point | Interactive upstream steps not covered |
 |---|---|---|---|
-| Multicolor colocalization | Yes | `Colocalization/PCCcaclu.m` (via `runDemoPcc.m`) | `MultiChannelDriftCorrection.m` (Miji + Fiji `HyperStackReg`), `PureDenoise`, `MultiChannelChromaticAberration.m`, and the S0/S1 manual point selection in `DemoDR_stage2.m` / `DemoDR_stage35.m` |
-| Single-molecule tracking | Yes | `SMTanalysis/MSDsingle2D.m`, `CDF_logCalc.m`, `linfitR.m` (via `runDemoSMT.m`) | `SMTdataPrepare.m`, ThunderSTORM localisation, Cellpose3 segmentation, `CACorrectionofSMTsplitter.m`, `Spotslink.m`, the `RefineTraceSegDr.mlapp` app and `statesClassifyDr.m` |
-| 3D-dSTORM septum width | Yes | `3D-dSTORM/dSTORMwidthcaclu.m` (via `runDemoDstorm.m`) | drawing the line ROIs across the septa in Fiji |
-| Electron tomography septum width | No | `Tomo/TomowidthCaclu.m` — needs an ImageJ line ROI plus two manual clicks to define the main axis | the same Fiji line-ROI drawing step as 3D-dSTORM |
-| FLIM | No | `Lifetime/lifeTcalculationbernsen.m` — needs an intensity/lifetime stack and a Bernsen background mask | the LAS X FLIM/FCS export and the Bernsen masking plugin, both run outside MATLAB |
+| Multicolor colocalization | Yes, the two unattended steps | `Colocalization/DemoS1AnalysisW.m` and `Colocalization/PCCcaclu.m` (via `demo/Colocalization/runDemoColoc.m`) | `MultiChannelDriftCorrection.m` (Miji + Fiji `HyperStackReg`), `PureDenoise`, `MultiChannelChromaticAberration.m`, the cell-cycle classification chain (Cellpose3 + [BacImgLab/DeCNN](https://github.com/BacImgLab/DeCNN)), and the manual S0/S1 point selection in `DemoDR_stage2.m` / `DemoDR_stage35.m` |
+| Fluorescence lifetime imaging | Yes, the two scriptable sections | `Lifetime/lifeTcalculationbernsen.m`, Sections 1 and 3 (via `demo/Lifetime/runDemoLifetime.m`) | the LAS X FLIM/FCS export, which runs in the acquisition software, and the Bernsen masking plugin `bersenThtest.ijm`, which runs in Fiji |
+| Single-molecule tracking | Yes, the speed-distribution fitting | `SMTanalysis/dataprocessSMTWCF.m` (via `demo/SMT/runDemoSMT.m`) | `SMTdataPrepare.m`, the ThunderSTORM localisation, `CACorrectionofSMTsplitter.m`, the Cellpose3 segmentation, `spotsLinking.m`, the `RefineTraceSegDr.mlapp` app and `statesClassifyDr.m` |
+| 3D-dSTORM septum width | Yes, the FWHM calculation | `3D-dSTORM/dSTORMwidthcaclu.m` (via `demo/SMLM/runDemoSMLM.m`) | drawing the line ROIs across the septa in Fiji and exporting the intensity profile of each line |
+| Electron tomography septum width | No — documentation package only | `Tomo/TomowidthCaclu.m` — needs an ImageJ polygon ROI plus two manual clicks to define the main axis; the example data and the walkthrough ship in `demo/Tomo/` | drawing the septum ROIs in Fiji, and the two axis clicks inside the script itself |
 
-The two modules that are not covered share the same reason: their numerical core
-consumes an input that is produced by an interactive step — a manually drawn line
-ROI in the case of tomography, a Fiji-generated background mask in the case of
-FLIM — so an unattended replay would have to substitute that step rather than
-execute it. The three covered modules are precisely those whose numerical core
-takes a plain, scriptable input: an intensity-profile CSV, a linked-trajectory
-table, and a 4-channel image stack.
+The electron-tomography module is the only one not covered: its numerical core consumes an input that no item of the published example data set provides — a manually drawn polygon ROI, plus two clicks inside the script itself — so an unattended replay would have to substitute that step rather than execute it; its published example data set (the slices, the drawn ROIs and the resulting width measurements) is small enough to ship, so it is documented and shipped in `demo/Tomo/` even though no step of it can be replayed. The four covered modules are precisely those whose interactive steps end at an item of the published example data set: the per-cell septum profiles and the smoothed demographs for the multicolor colocalization, the exported images and the published Bernsen mask for the FLIM workflow, the classified-trajectory table for the single-molecule tracking, and the exported intensity profiles of the drawn line ROIs for the 3D-dSTORM septum width.
+
+For the multicolor colocalization module and for the FLIM module the interactive step sits in the middle of the workflow. In the colocalization case it is the septum profiling (example data 4), which requires the S0 and S1 septum lines to be drawn by hand and every step upstream of it runs inside Fiji, Cellpose or the DeCNN classifier; the two steps downstream of it consume the per-cell images and demograph matrices that this step produces, and are therefore exactly the two that `runDemoColoc` replays. In the FLIM case it is the Bernsen masking, which runs in Fiji between the stacking and the quantification; the published mask is example data 3, so the two sections on either side of it can be replayed from the published data. For the SMT module the interactive steps end with the state classification, whose output table is the published example data 4 that `runDemoSMT` consumes. For the 3D-dSTORM module the interactive step sits at the very beginning of the pipeline — the line-ROI drawing and the profile export in Fiji — and the published example data set is precisely its output, so the one step downstream of it, the FWHM calculation, is the one `runDemoSMLM` replays.
 
 ---
 
